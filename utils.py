@@ -16,12 +16,15 @@ def getPageSize(architecture):
 def getWordMem(architecture):
     return architecture[2]
 
-def setPages():
-    pages = input("Entrer la chaine de reference (separee par une virgule): ")
+def setAdresses():
+    adresses = input("Entrer la chaine de reference (separee par une virgule): ")
+    return adresses
+
+def getPages(adresses):
     # Transform string to list
-    pages = re.split(',+', pages)
+    adresses = re.split(',+', adresses)
     # Convert to list of int
-    pages = list(map(int, pages))
+    pages = list(map(int, adresses))
     # Return list
     return pages
 
@@ -39,7 +42,8 @@ def main():
     architecture = setArchitecture()
     page_size = getPageSize(architecture)
     word_mem = getWordMem(architecture)
-    pages = setPages()
+    adresses = setAdresses()
+    pages = getPages(adresses)
     numberShift = getNumberShift(pages, page_size, word_mem)
 
     print(numberShift)
