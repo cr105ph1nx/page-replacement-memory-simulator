@@ -28,25 +28,21 @@ def getPages(adresses):
     # Return list
     return pages
 
-def getNumberShift(pages, page_size, word_mem):
-    numberShift = []
+def getNumberPages(pages, page_size, word_mem):
+    number_pages = []
     # Convert page size to Byte 
     page_size = page_size * word_mem * 1024
-    # Iterate over each page and calculate the number of page and shift
+    # Iterate over each page and calculate the number of page
     for page in pages:
-        numberShift.append([int(page/page_size), int(page%page_size)])
+        number_pages.append(int(page/page_size))
     # Return result
-    return numberShift
+    return number_pages
 
-def main():
-    architecture = setArchitecture()
-    page_size = getPageSize(architecture)
-    word_mem = getWordMem(architecture)
-    adresses = setAdresses()
-    pages = getPages(adresses)
-    numberShift = getNumberShift(pages, page_size, word_mem)
+def getColumns(number_pages):
+    columns = ['Chaine']
 
-    print(numberShift)
+    for number_page in number_pages:
+        value = str(number_page)
+        columns.append(value)
 
-if __name__ == "__main__":
-    main()
+    return columns
