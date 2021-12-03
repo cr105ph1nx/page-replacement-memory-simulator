@@ -3,6 +3,75 @@ def saveState(page_frame, state, column, matrix):
         matrix[i][column] = state[i]
     return matrix
 
+def algoOPTIMAL(page_frame, number_page, matrix):
+    def switchState(state, column, matrix):
+        if('X' in state):
+            for i in range(page_frame):
+                if(state[i] == 'X'):
+                    matrix[i][column] = number_page[column]
+                    k = i
+                    break
+            # Revert old state while saving new value
+            for i in range(page_frame):
+                if(i != k):
+                    matrix[i][column] = state[i]
+            # Add defaut
+            matrix[page_frame][column] = 1
+            return matrix
+        elif(state == []):
+            matrix[0][column] = number_page[column]
+            # Add defaut
+            matrix[page_frame][column] = 1
+            return matrix
+        else:
+            # Search for the least recently used number
+            columns = len(number_page) - 1
+            i = column
+            k = page_frame
+            temp_state = [j for j in state]
+
+            while(i < columns and k > 1):
+                i = i + 1
+                if(number_page[i] in temp_state):
+                    # Decrement index
+                    k = k - 1
+                    # Remove the selected value from temp_state
+                    temp_state.remove(number_page[i])
+
+            # Check the value 
+            # We need to replace the first number in state with new value
+            for i in range(page_frame):
+                if(state[i] == temp_state[0]):
+                    matrix[i][column] = number_page[column]
+                else:
+                    matrix[i][column] = state[i]
+
+            # Add defaut
+            matrix[page_frame][column] = 1
+
+            return matrix
+
+    columns = len(number_page)
+    for column in range(columns):
+        # Save state of past column
+        state = []
+        if(column == 0):
+            # Replace value
+            matrix = switchState(state, column, matrix)
+        else:
+            # Save state
+            for row in range(page_frame):
+                state.append(matrix[row][column-1])
+            # Replace value
+            if(number_page[column] in state):
+                # Keep the same state
+                matrix = saveState(page_frame, state, column, matrix)
+            else:
+                # Replace value
+                matrix = switchState(state, column, matrix)
+
+    # Return result of matrix
+    return matrix
 
 def algoLRU(page_frame, number_page, matrix):
     def switchState(state, column, matrix):

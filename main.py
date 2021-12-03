@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from utils import getPages, getNumberPages, getColumns, fillMatrix
-from algorithms import algoFIFO, algoLRU
+from algorithms import algoFIFO, algoLRU, algoOPTIMAL
 import time
 
 # 2, 5012, 6200, 8215, 2000, 17800, 50, 13248, 18456, 1203, 5741, 9442, 16524, 23580, 16895, 22630, 123
@@ -101,7 +101,8 @@ def create_options_frame(container):
         container)).grid(column=0, row=0)
     Button(frame, text='LRU', width=8, command=lambda: handleLRU(
         container)).grid(column=0, row=1)
-    Button(frame, text='OPTIMAL', width=8).grid(column=0, row=2)
+    Button(frame, text='OPTIMAL', width=8,command=lambda: handleOPTIMAL(
+        container)).grid(column=0, row=2)
     Button(frame, text='Renitialiser', width=8,
            command=lambda: initializeTable(container)).grid(column=0, row=3)
 
@@ -119,6 +120,36 @@ def initializeTable(root):
     options_frame.grid(column=1, row=1, sticky='NW',
                        pady=(20, 0), padx=(0, 5))
 
+
+def handleOPTIMAL(container):
+    global table_frame 
+
+    columns = getColumns(data['number_pages'])
+    columns_len = len(columns)
+    page_frame = data['page_frame']
+    rows_len = page_frame + 2
+
+    # Create a matrix of data
+    number_page = data['number_pages']
+    matrix = fillMatrix(page_frame, number_page)
+    matrix = algoOPTIMAL(page_frame, number_page, matrix)
+
+    # Fill table
+    for column in range(columns_len):
+        for row in range(rows_len):
+            if(row != 0 and column != 0):
+                # Add defauts buttons 
+                if(row == rows_len - 1):
+                    Button(table_frame, text=matrix[row-1][column-1],
+                       bg="red").grid(row=row, column=column)
+                else:
+                    # Add regular buttons
+                    Button(table_frame, text=matrix[row-1][column-1],
+                       bg="white").grid(row=row, column=column)
+                    
+
+
+    return table_frame  
 
 def handleLRU(container):
     global table_frame 

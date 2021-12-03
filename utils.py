@@ -1,4 +1,4 @@
-from algorithms import algoFIFO, algoLRU
+from algorithms import algoFIFO, algoLRU, algoOPTIMAL
 import re
 
 def setArchitecture():
@@ -80,7 +80,7 @@ def main():
     page_frame = getPageFrame(architecture)
     number_page = getNumberPages(pages, page_size, word_mem)
     matrix = fillMatrix(page_frame, number_page)
-    matrix = algoLRU(page_frame, number_page, matrix)
+    matrix = algoOPTIMAL(page_frame, number_page, matrix)
     
     for i in range(page_frame+1):
         print(matrix[i])
