@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
-from utils import getPages, getNumberPages, getColumns
+from utils import getPages, getNumberPages, getColumns, fillMatrix, algoFIFO
 
 # 2, 5012, 6200, 8215, 2000, 17800, 50, 13248, 18456, 1203, 5741, 9442, 16524, 23580, 16895, 22630, 123
-
 fields = ('Taille de la page (KO)', 'Taille de la memoire physique (KO)',
           'Taille du mot memoire (O)', 'La chaine de reference (separee par une virgule)')
 data = {
@@ -15,7 +14,6 @@ data = {
 }
 
 show = False
-
 
 def setInput(root, entries):
     global data, show
@@ -37,8 +35,6 @@ def setInput(root, entries):
             "page_frame": page_frame,
             "number_pages": number_pages
         }
-
-        print(data)
         initializeTable(root)
 
     except:
@@ -74,33 +70,33 @@ def create_form_frame(container):
 
 
 def create_simulation_frame(container):
-    frame = Frame(container, bg='white')
-    frame.grid(padx=(5, 0))
+    global table_frame
+
+    table_frame = Frame(container, bg='white')
+    table_frame.grid(padx=(5, 0))
 
     columns = getColumns(data['number_pages'])
-    page_frame = data['page_frame']
-    for row in range(page_frame + 2):
-        # first row
-        if(row == 0):
-            for j in range(len(columns)):
-                Button(frame, text=columns[j]).grid(row=row, column=j)
-        # last row
-        elif(row == page_frame + 1):
-            Button(frame, text="Defauts").grid(row=row, column=0)
-            for j in range(len(columns)-1):
-                Button(frame, text="0", bg="red").grid(row=row, column=j+1)
-        # normal row
-        else:
-            Button(frame, text=("Page %d" % row)).grid(row=row, column=0)
-            for j in range(len(columns)-1):
-                Button(frame, text="X", bg="white").grid(row=row, column=j+1)
-    return frame
+    columns_len = len(columns)
+    rows_len = data['page_frame'] + 2
+
+    # Initialize first row
+    for j in range(columns_len):
+        Button(table_frame, text=columns[j]).grid(row=0, column=j)
+    # Initialize first column
+    for i in range(rows_len):
+        if(i == rows_len - 1):
+            Button(table_frame, text="Defauts").grid(row=i, column=0)
+        elif(i != 0):
+            Button(table_frame, text=("Page %d" % i)).grid(row=i, column=0)
+
+    return table_frame
 
 
 def create_options_frame(container):
     frame = Frame(container)
 
-    Button(frame, text='FIFO', width=8).grid(column=0, row=0)
+    Button(frame, text='FIFO', width=8, command=lambda: handleFIFO(
+        container)).grid(column=0, row=0)
     Button(frame, text='LRU', width=8).grid(column=0, row=1)
     Button(frame, text='OPTIMAL', width=8).grid(column=0, row=2)
     Button(frame, text='Renitialiser', width=8,
@@ -119,6 +115,36 @@ def initializeTable(root):
     options_frame = create_options_frame(root)
     options_frame.grid(column=1, row=1, sticky='NW',
                        pady=(20, 0), padx=(0, 5))
+
+
+def handleFIFO(container):
+    global table_frame 
+
+    columns = getColumns(data['number_pages'])
+    columns_len = len(columns)
+    page_frame = data['page_frame']
+    rows_len = page_frame + 2
+
+    # Create a matrix of data
+    number_page = data['number_pages']
+    matrix = fillMatrix(page_frame, number_page)
+    matrix = algoFIFO(page_frame, number_page, matrix)
+
+    # Fill table
+    for column in range(columns_len):
+        for row in range(rows_len):
+            if(row != 0 and column != 0):
+                # Add defauts buttons 
+                if(row == rows_len - 1):
+                    Button(table_frame, text=matrix[row-1][column-1],
+                       bg="red").grid(row=row, column=column)
+                else:
+                    # Add regular buttons
+                    Button(table_frame, text=matrix[row-1][column-1],
+                       bg="white").grid(row=row, column=column)
+
+
+    return table_frame
 
 
 if __name__ == '__main__':
